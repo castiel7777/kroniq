@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KroniQ | Timeless Elegance</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-bg: #0a0a0a;
+      --secondary-bg: #121212;
+      --accent-color: #d4af37;
+      --text-color: #f0f0f0;
+      --subtle-text: #888;
+      --border-color: #333;
+    }
+
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      font-family: 'Lato', sans-serif;
+      overflow-y: scroll;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      background-color: var(--secondary-bg);
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: var(--secondary-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--accent-color);
+      border-radius: 5px;
+      border: 2px solid var(--secondary-bg);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #c5a12e;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .cta-button {
+      background-color: var(--accent-color);
+      color: var(--primary-bg);
+      padding: 12px 32px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      background-color: #c5a12e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .cta-button:disabled {
+      background-color: #555;
+      color: #888;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .outline-button {
+      background-color: transparent;
+      color: var(--accent-color);
+      border: 2px solid var(--accent-color);
+      padding: 10px 32px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .outline-button:hover {
+      background-color: var(--accent-color);
+      color: var(--primary-bg);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .product-card {
+      background-color: var(--secondary-bg);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    #modal-overlay,
+    #product-modal {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #product-modal {
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    #modal-overlay.open,
+    #product-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #product-modal.open {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #custom-notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--accent-color);
+      color: var(--primary-bg);
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: bold;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translate(-50%, 10px);
+    }
+
+    #custom-notification.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .filter-section {
+      background-color: var(--secondary-bg);
+      padding: 24px;
+      margin-bottom: 48px;
+      border: 1px solid var(--border-color);
+    }
+
+    .filter-tag {
+      display: inline-block;
+      padding: 8px 16px;
+      margin: 4px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      font-size: 14px;
+      user-select: none;
+      font-weight: 500;
+      /* fixed baseline weight */
+    }
+
+    .filter-tag:hover {
+      border-color: var(--accent-color);
+    }
+
+    .filter-tag.active {
+      background-color: var(--accent-color);
+      color: var(--primary-bg);
+      border-color: var(--accent-color);
+      /* REMOVE font-weight bold to stop layout shift */
+      font-weight: 500;
+    }
+
+    /* NEW: brand dropdown styling */
+    .brand-chip {
+      position: relative;
+    }
+
+    .models-dropdown {
+      position: absolute;
+      top: 100%;
+      /* drop below brand chip */
+      left: 0;
+      min-width: 180px;
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .5);
+      z-index: 50;
+    }
+
+    .models-dropdown .filter-tag {
+      display: block;
+      margin: 6px;
+    }
+
+    .caret {
+      font-size: 11px;
+      line-height: 1;
+      padding: 0 4px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Price slider styles (unchanged) */
+    .price-input-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .price-input-field {
+      width: 100%;
+      padding: 8px;
+      background-color: var(--primary-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      appearance: textfield;
+      -webkit-appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    .price-input-field::-webkit-outer-spin-button,
+    .price-input-field::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .slider-container {
+      position: relative;
+      height: 4px;
+    }
+
+    .slider-track,
+    .slider-range {
+      position: absolute;
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .slider-track {
+      width: 100%;
+      background-color: var(--border-color);
+    }
+
+    .slider-range {
+      background-color: var(--accent-color);
+    }
+
+    .range-input {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      top: -2px;
+      background: none;
+      pointer-events: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    .range-input::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-appearance: none;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .range-input::-moz-range-thumb {
+      height: 16px;
+      width: 16px;
+      border: none;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      pointer-events: auto;
+      -moz-appearance: none;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* === NEW: VIDEO FADE OVERLAY STYLE === */
+    .video-fade-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease-in-out;
+      z-index: 5;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-50 bg-[var(--primary-bg)]/80 backdrop-blur-md">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="#" data-action="go-home" class="text-3xl font-bold tracking-wider text-white">KroniQ</a>
+      <button id="cart-button" data-action="show-cart" class="relative group">
+        <svg xmlns="http://www.w.org/2000/svg" class="h-7 w-7 text-gray-300 group-hover:text-white transition-colors"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v.01M17 13v.01" />
+        </svg>
+        <span id="cart-count"
+          class="absolute -top-2 -right-2 bg-red-600 text-[10px] text-white font-bold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-300 scale-0">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <section id="home-view" class="view">
+      <div class="relative h-[85vh] flex items-center justify-center text-center text-white overflow-hidden">
+        <video id="bgVideo" class="absolute top-0 left-0 w-full h-full object-cover z-0" muted autoplay
+          playsinline></video>
+        <div id="video-fade-overlay" class="video-fade-overlay"></div>
+
+        <div
+          class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
+        </div>
+        <div class="relative z-20 p-6">
+
+          <h1 class="text-5xl md:text-7xl font-bold mb-4">The Art of Precision</h1>
+          <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto text-gray-300">Experience craftsmanship that
+            transcends time. Each piece, a testament to dedication.</p>
+          <button data-action="show-products" class="cta-button">Shop Now</button>
+        </div>
+      </div>
+      <div class="bg-black py-20">
+        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-4xl font-bold mb-4 text-white">A Legacy of Elegance</h2>
+            <p class="text-gray-400 leading-relaxed mb-6">KroniQ is not just about telling time. It's about
+              a statement of who you are. For decades, we have been at the forefront of horological
+              innovation, blending classic design with modern technology to create timepieces that are
+              both beautiful and reliable.</p>
+            <p class="text-gray-400 leading-relaxed">Our collection is curated from the world's most
+              renowned watchmakers, ensuring every piece meets our exacting standards of quality and
+              style.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <img src="https://images.unsplash.com/photo-1594576722539-a71144e3a803?q=80&w=1287&auto-format&fit=crop"
+              alt="Watch detail" class="w-full h-full object-cover rounded-lg shadow-lg" />
+            <img src="https://images.unsplash.com/photo-1542314831-068cd1dbb563?q=80&w=1470&auto=format&fit=crop"
+              alt="Elegant watch on a wrist" class="w-full h-full object-cover rounded-lg shadow-lg mt-8" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="products-view" class="view">
+      <div class="container mx-auto px-6 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">Our Collection</h2>
+
+        <div class="filter-section">
+          <div class="grid md:grid-cols-2 gap-x-12 gap-y-8 items-start">
+            <div>
+              <h3 class="font-bold text-lg mb-4">Filter by Brand</h3>
+              <div id="brand-filters" class="flex flex-wrap"></div>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg mb-4">Filter by Price</h3>
+              <div class="price-input-container">
+                <div class="flex-1">
+                  <label for="min-price-input" class="text-sm text-gray-400">Min</label>
+                  <div class="relative">
+                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400">₾</span>
+                    <input type="number" id="min-price-input" class="price-input-field pl-5" />
+                  </div>
+                </div>
+                <div class="pt-5 text-gray-400">-</div>
+                <div class="flex-1">
+                  <label for="max-price-input" class="text-sm text-gray-400">Max</label>
+                  <div class="relative">
+                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400">₾</span>
+                    <input type="number" id="max-price-input" class="price-input-field pl-5" />
+                  </div>
+                </div>
+              </div>
+              <div class="slider-container">
+                <div class="slider-track"></div>
+                <div id="slider-range" class="slider-range"></div>
+                <input type="range" id="min-price-slider" class="range-input" min="0" max="1000" value="0" />
+                <input type="range" id="max-price-slider" class="range-input" min="0" max="1000" value="1000" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="product-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        <p id="no-products-message" class="text-center text-gray-400 text-xl py-12 hidden">No products match
+          your current filters.</p>
+      </div>
+    </section>
+
+    <section id="cart-view" class="view">
+      <div class="container mx-auto px-6 py-16 max-w-3xl">
+        <div class="bg-[var(--secondary-bg)] p-8">
+          <h2 class="text-3xl font-bold text-center mb-8">Your Cart</h2>
+          <div id="cart-items" class="space-y-6"></div>
+          <div id="cart-summary"
+            class="mt-8 pt-6 border-t border-[var(--border-color)] flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p id="cart-total-text" class="text-2xl font-bold">Total: ₾0</p>
+            <div class="flex items-center gap-4">
+              <button data-action="clear-cart" class="text-gray-400 hover:text-white transition">Clear
+                Cart</button>
+              <button data-action="show-checkout" id="checkout-button" class="cta-button">Checkout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="checkout-view" class="view">
+      <div class="container mx-auto px-6 py-16 max-w-xl text-center">
+        <div class="bg-[var(--secondary-bg)] p-8 md:p-12">
+          <h2 class="text-3xl font-bold mb-4">Final Step</h2>
+          <p class="text-[var(--subtle-text)] mb-8">We handle all orders personally to ensure the best
+            service. Please choose your preferred method to contact us and finalize your purchase.</p>
+
+          <div id="checkout-options" class="space-y-6">
+            <h3 class="text-xl font-bold">How would you like to proceed?</h3>
+            <div class="grid sm:grid-cols-2 gap-6">
+              <button data-action="contact-facebook" class="outline-button w-full">Contact on
+                Facebook</button>
+              <button data-action="contact-email" class="cta-button w-full">Contact via Email</button>
+            </div>
+          </div>
+
+          <div id="email-form-container" class="hidden mt-8 text-left">
+            <p class="text-center text-[var(--subtle-text)] mb-4">Please provide your email. We will send
+              your cart details to our sales team, and you will receive a copy.</p>
+            <form id="email-form">
+              <input id="user-email" type="email" placeholder="Enter your email address"
+                class="w-full bg-[var(--primary-bg)] border border-[var(--border-color)] p-3 rounded-sm mb-4 focus:outline-none focus:border-[var(--accent-color)]"
+                required />
+              <button type="submit" data-action="send-email" class="cta-button w-full">Send
+                Inquiry</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-overlay" class="fixed inset-0 bg-black/80 z-[999]"></div>
+  <div id="product-modal"
+    class="fixed top-1/2 left-1/2 w-11/12 max-w-4xl bg-[var(--secondary-bg)] z-[1000] p-8 shadow-2xl"></div>
+
+  <div id="custom-notification"></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    const canvas = document.querySelector('#hero-canvas');
+    if (canvas) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.z = 1.5;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1;
+
+      const environment = new RoomEnvironment();
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmremGenerator.fromScene(environment).texture;
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.screenSpacePanning = false;
+      controls.enablePan = false;
+      controls.enableZoom = false;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.5;
+      controls.target.set(0, 0, 0);
+
+      const loader = new GLTFLoader();
+      loader.load(
+        'https://cdn.jsdelivr.net/gh/nikalezhava/qronik-assets/casio_g-shock_gm-2100-1aer.glb',
+        (gltf) => {
+          const model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          model.position.sub(center);
+          scene.add(model);
+        },
+        undefined,
+        (error) => { console.error('An error happened while loading the model:', error); }
+      );
+
+      const onWindowResize = () => {
+        const container = canvas.parentElement;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      };
+      window.addEventListener('resize', onWindowResize);
+      onWindowResize();
+
+      const animate = () => {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      };
+      animate();
+    }
+  </script>
+
+  <script type="module">
+    // =============================
+    // STATE
+    // =============================
+    const state = {
+      products: [
+        
+        { id: 2, name: "Rolex Sky-Dweller", price: 69, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_Sky-Dweller_hjy8bc.jpg", description: "უჟანგავი ფოლადის ოქროსფერი სამაჯური და ბზინვარე დეტალები. კვარცის მექანიზმი, თარიღის ჩვენება, დაცვა წვეთებისა და ტენისგან.", tags: ["rolex", "sky-dweller"] },
+
+{ id: 3, name: "Patek Philippe Nautilus", price: 59, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Patek_Philippe_Nautilus_yrqyio.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი მაღალი ხარისხის პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["patek", "nautilus"] },
+
+{ id: 4, name: "Rolex Submariner", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Rolex_Submariner_klkwlw.jpg", description: "უჟანგავი ფოლადის დიზაინი მბრუნავი ბეზელით. კვარცის მექანიზმი, თარიღის ჩვენება და წყალგამძლეობა ყოველდღიური ტენიანობისგან.", tags: ["rolex", "submariner"] },
+
+{ id: 5, name: "Rolex Oyster Perpetual", price: 300, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_Oyster_Perpetual_kzu9rl.jpg", description: "ვერცხლისფერი Jubilee სამაჯური, უნიკალური ცისფერი ციფერბლატი. მექანიკური მექანიზმი, თარიღის ჩვენება Cyclops გადიდებით.", tags: ["rolex", "oyster-perpetual"] },
+
+{ id: 6, name: "Rolex GMT-Master II", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_GMT-Master_II_cjonbr.jpg", description: "Jubilee bracelet სამაჯური, მბრუნავი ბეზელი (24ს). კვარცის მექანიზმი, ფოსფორით ანთებული დეტალები, წყალგამძლე.", tags: ["rolex", "gmt-master"] },
+
+{ id: 7, name: "Cartier Santos", price: 75, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580723/Cartier_Santos_elascz.jpg", description: "უჟანგავი ფოლადის სამაჯური დეკორატიული ჭანჭიკებით. კვადრატული კორპუსი, კვარცის მექანიზმი, თარიღის ჩვენება.", tags: ["cartier", "santos"] },
+
+{ id: 8, name: "Tissot PRX Powermatic 80", price: 69, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Tissot_PRX_Powermatic_80_xt875v.jpg", description: "ელეგანტური და გამძლე უჟანგავი ფოლადის სამაჯური. კვარცის მექანიზმი, დაცვა წვეთებისა და ტენისგან.", tags: ["tissot", "prx"] },
+
+{ id: 9, name: "Audemars Piguet Royal Oak", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Audemars_Piguet_Royal_Oak_ndfbpd.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი, პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["audemars", "royal-oak"] },
+
+      ],
+      cart: [],
+      filters: {
+        tags: [],
+        minPrice: 0,
+        maxPrice: 1000
+      }
+    };
+
+    const DOMElements = {
+      views: document.querySelectorAll('.view'),
+      cartCount: document.getElementById('cart-count'),
+      productList: document.getElementById('product-list'),
+      modal: document.getElementById('product-modal'),
+      modalOverlay: document.getElementById('modal-overlay'),
+      cartItemsContainer: document.getElementById('cart-items'),
+      cartTotalText: document.getElementById('cart-total-text'),
+      checkoutButton: document.getElementById('checkout-button'),
+      emailFormContainer: document.getElementById('email-form-container'),
+      emailForm: document.getElementById('email-form'),
+      notification: document.getElementById('custom-notification'),
+      brandFiltersContainer: document.getElementById('brand-filters'),
+      noProductsMessage: document.getElementById('no-products-message'),
+      minPriceInput: document.getElementById('min-price-input'),
+      maxPriceInput: document.getElementById('max-price-input'),
+      minPriceSlider: document.getElementById('min-price-slider'),
+      maxPriceSlider: document.getElementById('max-price-slider'),
+      sliderRange: document.getElementById('slider-range'),
+      // === NEW: VIDEO DOM ELEMENTS ===
+      bgVideo: document.getElementById('bgVideo'),
+      videoFadeOverlay: document.getElementById('video-fade-overlay'),
+    };
+
+    const priceGap = 100;
+
+    // CORE helpers
+    const showView = (viewName) => {
+      DOMElements.views.forEach(view => view.classList.remove('active'));
+      const targetView = document.getElementById(`${viewName}-view`);
+      if (targetView) targetView.classList.add('active');
+      window.scrollTo(0, 0);
+    };
+    const saveCart = () => localStorage.setItem('qronikCart', JSON.stringify(state.cart));
+    const loadCart = () => {
+      const storedCart = localStorage.getItem('qronikCart');
+      if (storedCart) state.cart = JSON.parse(storedCart);
+    };
+    let notificationTimeout;
+    const showCustomNotification = (message) => {
+      clearTimeout(notificationTimeout);
+      DOMElements.notification.textContent = message;
+      DOMElements.notification.classList.add('show');
+      notificationTimeout = setTimeout(() => DOMElements.notification.classList.remove('show'), 3000);
+    };
+    
+    // === NEW: VIDEO PLAYER LOGIC ===
+    const videoElement = DOMElements.bgVideo;
+    const videoFadeOverlay = DOMElements.videoFadeOverlay;
+    const videoSources = [
+        "https://res.cloudinary.com/dlp1pnarv/video/upload/v1756577002/FRTL001_sv1slu.mp4",
+        "https://res.cloudinary.com/dlp1pnarv/video/upload/v1756578158/FLTR001_hvteva.mp4",
+        "https://res.cloudinary.com/dlp1pnarv/video/upload/v1756578326/FLTR002_mqvjuz.mp4"
+    ];
+    let currentVideoIndex = 0;
+    
+    function playNextVideo() {
+        // Use GSAP to fade in the black overlay
+        gsap.to(videoFadeOverlay, {
+            opacity: 1,
+            duration: 0.7, // Fade out duration
+            onComplete: () => {
+                // Once the overlay is fully opaque, switch the video source
+                currentVideoIndex = (currentVideoIndex + 1) % videoSources.length;
+                videoElement.src = videoSources[currentVideoIndex];
+                videoElement.load();
+             }
+        });
+    }
+    
+    function setupVideoPlayer() {
+        if (videoSources.length > 0) {
+            // Set the initial video source
+            videoElement.src = videoSources[currentVideoIndex];
+            // Add a listener to handle fade-in after the video is loaded
+            videoElement.addEventListener('canplay', () => {
+                gsap.to(videoFadeOverlay, { opacity: 0, duration: 0.7 });
+            });
+            // Add an event listener to trigger the next video transition when the current one ends
+            videoElement.addEventListener('ended', playNextVideo);
+            // Start the initial video playback
+            videoElement.play().catch(error => console.error("Initial video play failed:", error));
+        }
+    }
+
+
+    // FILTERING (Unchanged)
+    const applyFiltersAndRender = () => {
+      let filtered = state.products.filter(p =>
+        p.price >= state.filters.minPrice && p.price <= state.filters.maxPrice
+      );
+      if (state.filters.tags.length > 0) {
+        filtered = filtered.filter(p =>
+          p.tags.some(tag => state.filters.tags.includes(tag))
+        );
+      }
+      renderProducts(filtered);
+    };
+
+    const renderProducts = (productsToRender) => {
+      if (productsToRender.length === 0) {
+        DOMElements.productList.innerHTML = '';
+        DOMElements.noProductsMessage.classList.remove('hidden');
+      } else {
+        DOMElements.productList.innerHTML = productsToRender.map(p => `
+          <div class="product-card" data-action="show-product-modal" data-id="${p.id}">
+            <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-64 object-cover">
+            <div class="p-4 text-center">
+              <h3 class="font-bold text-lg">${p.name}</h3>
+              <p class="text-[var(--subtle-text)]">₾${p.price.toLocaleString()}</p>
+            </div>
+          </div>
+        `).join('');
+        DOMElements.noProductsMessage.classList.add('hidden');
+      }
+    };
+
+    // --- Brand + Models dropdown renderer --- (Unchanged)
+   const renderBrandFilters = () => {
+  const brandMap = {};
+
+  // build brand -> models mapping
+  state.products.forEach(p => {
+    const brand = p.tags.find(t =>
+      ["stauer","aevig","mvmt","fossil","citizen","seiko","tissot","hamilton",
+       "bulova","casio","rolex","omega","tag heuer","patek philippe","audemars piguet"].includes(t)
+    ) || p.tags[0]; // fallback
+    if (!brandMap[brand]) brandMap[brand] = new Set();
+
+    // add other tags as models
+    p.tags.forEach(t => {
+      if (t !== brand) brandMap[brand].add(t);
+    });
+  });
+
+  DOMElements.brandFiltersContainer.innerHTML = Object.keys(brandMap).sort().map(brand => {
+    const models = [...brandMap[brand]];
+    return `
+      <div class="brand-chip relative inline-block m-1">
+        <span class="filter-tag inline-flex items-center gap-1" data-action="toggle-brand-filter" data-tag="${brand}">
+          ${brand}
+          ${models.length ? `<button class="caret ml-1" data-action="toggle-models-dropdown" data-brand="${brand}">▼</button>` : ''}
+        </span>
+        ${models.length ? `
+          <div class="models-dropdown hidden p-2" data-models-dropdown="${brand}">
+            ${models.map(m => `
+              <div class="filter-tag block" data-action="toggle-brand-filter" data-tag="${m}">${m}</div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+};
+    // CART / MODAL (unchanged)
+    const updateCartCount = () => {
+      const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+      DOMElements.cartCount.textContent = count;
+      gsap.to(DOMElements.cartCount, { scale: count > 0 ? 1 : 0, duration: 0.3, ease: 'back.out(1.7)' });
+    };
+    const renderCart = () => {
+      const isCartEmpty = state.cart.length === 0;
+      if (isCartEmpty) {
+        DOMElements.cartItemsContainer.innerHTML = '<p class="text-center text-[var(--subtle-text)] py-8">Your cart is empty.</p>';
+      } else {
+        DOMElements.cartItemsContainer.innerHTML = state.cart.map(item => `
+          <div class="flex items-center gap-6">
+            <img src="${item.imageUrl}" alt="${item.name}" class="w-24 h-24 object-cover">
+            <div class="flex-grow">
+              <h4 class="font-bold text-lg">${item.name}</h4>
+              <p class="text-sm text-[var(--subtle-text)]">₾${item.price.toLocaleString()}</p>
+              
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="px-2 border border-[var(--border-color)]" data-action="decrease-quantity" data-id="${item.id}">-</button>
+              <span class="w-6 text-center text-lg">${item.quantity}</span>
+              <button class="px-2 border border-[var(--border-color)]" data-action="increase-quantity" data-id="${item.id}">+</button>
+            </div>
+            <p class="font-bold w-20 text-right text-lg">₾${(item.price * item.quantity).toLocaleString()}</p>
+          </div>
+        `).join('');
+      }
+      const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      DOMElements.cartTotalText.textContent = `Total: ₾${total.toLocaleString()}`;
+      DOMElements.checkoutButton.disabled = isCartEmpty;
+    };
+    const showProductModal = (productId) => {
+      const product = state.products.find(p => p.id === productId);
+      if (!product) return;
+      DOMElements.modal.innerHTML = `
+        <button data-action="close-modal" class="absolute top-4 right-5 text-gray-400 hover:text-white transition-colors text-4xl leading-none z-10">&times;</button>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-auto object-cover max-h-[70vh]">
+          </div>
+          <div class="flex flex-col h-full py-4">
+            <h2 class="text-3xl lg:text-4xl font-bold mb-2">${product.name}</h2>
+            <p class="text-3xl lg:text-4xl text-[var(--accent-color)] mb-6">₾${product.price.toLocaleString()}</p>
+
+            <p class="text-[var(--subtle-text)] leading-relaxed mb-8">${product.description}</p>
+            <div class="mt-auto">
+              <button class="cta-button w-full" data-action="add-to-cart" data-id="${product.id}">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      `;
+      DOMElements.modal.classList.add('open');
+      DOMElements.modalOverlay.classList.add('open');
+    };
+    const closeProductModal = () => {
+      DOMElements.modal.classList.remove('open');
+      DOMElements.modalOverlay.classList.remove('open');
+    };
+
+    // EMAIL ACTIONS (unchanged)
+    const addToCart = (productId) => {
+      const cartItem = state.cart.find(item => item.id === productId);
+      if (cartItem) cartItem.quantity++;
+      else {
+        const product = state.products.find(p => p.id === productId);
+        state.cart.push({ ...product, quantity: 1 });
+      }
+      saveCart();
+      updateCartCount();
+      closeProductModal();
+      showCustomNotification(`${state.products.find(p => p.id === productId).name} added to cart!`);
+    };
+    const updateCartItem = (productId, action) => {
+      const idx = state.cart.findIndex(item => item.id === productId);
+      if (idx === -1) return;
+      if (action === 'increase') state.cart[idx].quantity++;
+      else if (action === 'decrease') {
+        state.cart[idx].quantity--;
+        if (state.cart[idx].quantity <= 0) state.cart.splice(idx, 1);
+      }
+      saveCart(); renderCart(); updateCartCount();
+    };
+    const clearCart = () => {
+      state.cart = [];
+      saveCart(); renderCart(); updateCartCount();
+      showCustomNotification("Cart has been cleared.");
+    };
+    const handleEmailInquiry = () => {
+      if (state.cart.length === 0) { showCustomNotification("Your cart is empty."); return; }
+      const recipient = "nikalezhava5@gmail.com";
+      const subject = "New Watch Inquiry from KroniQ Website";
+      let body = "A customer has submitted an inquiry for the following items:\n\n";
+      let total = 0;
+      state.cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        body += `- ${item.name} (x${item.quantity}) - ₾${itemTotal.toLocaleString()}\n`;
+      });
+      body += `\n----------------------------------\n`;
+      body += `TOTAL: $${total.toLocaleString()}\n\n`;
+      body += `Customer Email: ${document.getElementById('user-email').value}\n\n`;
+      body += "Please contact the customer to arrange payment and shipping.";
+      const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+      showCustomNotification("Thank you! Please send the email from your mail client.");
+      clearCart(); showView('home');
+    };
+
+    // PRICE slider visuals (unchanged)
+    const updateSliderVisuals = () => {
+      const minVal = parseInt(DOMElements.minPriceSlider.value);
+      const maxVal = parseInt(DOMElements.maxPriceSlider.value);
+      const minPercent = (minVal / DOMElements.minPriceSlider.max) * 100;
+      const maxPercent = (maxVal / DOMElements.maxPriceSlider.max) * 100;
+      DOMElements.sliderRange.style.left = `${minPercent}%`;
+      DOMElements.sliderRange.style.width = `${maxPercent - minPercent}%`;
+    };
+    const handleMinPriceSlider = () => {
+      let minVal = parseInt(DOMElements.minPriceSlider.value);
+      let maxVal = parseInt(DOMElements.maxPriceSlider.value);
+      if (maxVal - minVal < priceGap) {
+        minVal = maxVal - priceGap;
+        DOMElements.minPriceSlider.value = minVal;
+      }
+      DOMElements.minPriceInput.value = minVal;
+      state.filters.minPrice = minVal;
+      updateSliderVisuals();
+      applyFiltersAndRender();
+    };
+    const handleMaxPriceSlider = () => {
+      let minVal = parseInt(DOMElements.minPriceSlider.value);
+      let maxVal = parseInt(DOMElements.maxPriceSlider.value);
+      if (maxVal - minVal < priceGap) {
+        maxVal = minVal + priceGap;
+        DOMElements.maxPriceSlider.value = maxVal;
+      }
+      DOMElements.maxPriceInput.value = maxVal;
+      state.filters.maxPrice = maxVal;
+      updateSliderVisuals();
+      applyFiltersAndRender();
+    };
+    const handleMinPriceInput = () => {
+      let minVal = parseInt(DOMElements.minPriceInput.value);
+      if (isNaN(minVal)) minVal = 0;
+      if (minVal > state.filters.maxPrice - priceGap) {
+        minVal = state.filters.maxPrice - priceGap;
+      }
+      DOMElements.minPriceInput.value = minVal;
+      DOMElements.minPriceSlider.value = minVal;
+      state.filters.minPrice = minVal;
+      updateSliderVisuals();
+      applyFiltersAndRender();
+    };
+    const handleMaxPriceInput = () => {
+      let maxVal = parseInt(DOMElements.maxPriceInput.value);
+      if (isNaN(maxVal)) maxVal = DOMElements.maxPriceSlider.max;
+      if (maxVal < state.filters.minPrice + priceGap) {
+        maxVal = state.filters.minPrice + priceGap;
+      }
+      DOMElements.maxPriceInput.value = maxVal;
+      DOMElements.maxPriceSlider.value = maxVal;
+      state.filters.maxPrice = maxVal;
+      updateSliderVisuals();
+      applyFiltersAndRender();
+    };
+
+    // ======= ACTION HANDLER (Unchanged) =======
+    const handleAction = (e) => {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      const { action, id, tag, brand } = target.dataset;
+      const productId = parseInt(id);
+
+      switch (action) {
+        case 'go-home': showView('home'); break;
+        case 'show-products': showView('products'); break;
+        case 'show-cart': renderCart(); showView('cart'); break;
+        case 'show-checkout': showView('checkout'); DOMElements.emailFormContainer.classList.add('hidden'); break;
+        case 'show-product-modal': showProductModal(productId); break;
+        case 'close-modal': closeProductModal(); break;
+        case 'add-to-cart': addToCart(productId); break;
+        case 'decrease-quantity': updateCartItem(productId, 'decrease'); break;
+        case 'increase-quantity': updateCartItem(productId, 'increase'); break;
+        case 'clear-cart': clearCart(); break;
+        case 'contact-facebook':
+          window.open('https://www.facebook.com/your-page-url', '_blank');
+          showCustomNotification("Redirecting to Facebook...");
+          break;
+        case 'contact-email':
+          DOMElements.emailFormContainer.classList.remove('hidden');
+          break;
+
+        // NEW: filter toggles
+        case 'toggle-brand-filter': {
+          target.classList.toggle('active');
+          const set = new Set(state.filters.tags);
+          if (set.has(tag)) set.delete(tag);
+          else set.add(tag);
+          state.filters.tags = [...set];
+          applyFiltersAndRender();
+          break;
+        }
+        case 'toggle-models-dropdown': {
+          // close other open dropdowns
+          document.querySelectorAll('[data-models-dropdown]').forEach(dd => dd.classList.add('hidden'));
+          const dropdown = document.querySelector(`[data-models-dropdown="${brand}"]`);
+          if (dropdown) dropdown.classList.toggle('hidden');
+          break;
+        }
+      }
+    };
+
+    // close dropdowns when clicking outside
+    const closeDropdownsOnOutsideClick = (e) => {
+      if (e.target.closest('.brand-chip')) return;
+      document.querySelectorAll('[data-models-dropdown]').forEach(dd => dd.classList.add('hidden'));
+    };
+
+    // ======= INIT =======
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCart();
+      renderBrandFilters();
+      applyFiltersAndRender();
+      updateCartCount();
+      // === NEW: INITIALIZE VIDEO PLAYER ===
+      setupVideoPlayer();
+      showView('home');
+
+      DOMElements.minPriceInput.value = state.filters.minPrice;
+      DOMElements.maxPriceInput.value = state.filters.maxPrice;
+      DOMElements.minPriceSlider.value = state.filters.minPrice;
+      DOMElements.maxPriceSlider.value = state.filters.maxPrice;
+      updateSliderVisuals();
+
+      document.body.addEventListener('click', handleAction);
+      document.addEventListener('click', closeDropdownsOnOutsideClick);
+      DOMElements.modalOverlay.addEventListener('click', closeProductModal);
+      DOMElements.emailForm.addEventListener('submit', (e) => { e.preventDefault(); handleEmailInquiry(); });
+
+      DOMElements.minPriceSlider.addEventListener('input', handleMinPriceSlider);
+      DOMElements.maxPriceSlider.addEventListener('input', handleMaxPriceSlider);
+      DOMElements.minPriceInput.addEventListener('change', handleMinPriceInput);
+      DOMElements.maxPriceInput.addEventListener('change', handleMaxPriceInput);
+    });
+  </script>
+</body>
+
+</html>
