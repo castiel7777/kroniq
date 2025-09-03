@@ -9,11 +9,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
+  <!-- Added EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
       }
     }
   </script>
@@ -38,6 +41,8 @@
       color: var(--text-color);
       font-family: 'Lato', sans-serif;
       overflow-y: scroll;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     ::-webkit-scrollbar {
@@ -77,6 +82,8 @@
       letter-spacing: 1px;
       transition: all 0.3s ease;
       display: inline-block;
+      border-radius: 4px;
+      /* Added for consistency */
     }
 
     .cta-button:hover {
@@ -102,6 +109,8 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       transition: all 0.3s ease;
+      border-radius: 4px;
+      /* Added for consistency */
     }
 
     .outline-button:hover {
@@ -179,15 +188,10 @@
       transform: translate(-50%, 0);
     }
 
-    .filter-section {
-      background-color: var(--secondary-bg);
-      padding: 24px;
-      margin-bottom: 48px;
-      border: 1px solid var(--border-color);
-    }
-
     .filter-tag {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 8px 16px;
       margin: 4px;
       border: 1px solid var(--border-color);
@@ -197,7 +201,6 @@
       font-size: 14px;
       user-select: none;
       font-weight: 500;
-      /* fixed baseline weight */
     }
 
     .filter-tag:hover {
@@ -208,11 +211,9 @@
       background-color: var(--accent-color);
       color: var(--primary-bg);
       border-color: var(--accent-color);
-      /* REMOVE font-weight bold to stop layout shift */
       font-weight: 500;
     }
 
-    /* NEW: brand dropdown styling */
     .brand-chip {
       position: relative;
     }
@@ -220,9 +221,8 @@
     .models-dropdown {
       position: absolute;
       top: 100%;
-      /* drop below brand chip */
       left: 0;
-      min-width: 180px;
+      min-width: 150px;
       background-color: var(--secondary-bg);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -243,7 +243,6 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Price slider styles (unchanged) */
     .price-input-container {
       display: flex;
       justify-content: space-between;
@@ -258,6 +257,7 @@
       background-color: var(--primary-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
+      border-radius: 2px;
       appearance: textfield;
       -webkit-appearance: textfield;
       -moz-appearance: textfield;
@@ -325,7 +325,6 @@
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
 
-    /* === NEW: VIDEO FADE OVERLAY STYLE === */
     .video-fade-overlay {
       position: absolute;
       top: 0;
@@ -338,6 +337,188 @@
       transition: opacity 0.7s ease-in-out;
       z-index: 5;
     }
+
+    /* ============================================= */
+    /* ===== RESPONSIVE FILTER SECTION STYLES ===== */
+    /* ============================================= */
+
+    /* --- Mobile-First Styles (Screens < 768px) --- */
+
+    /* Styles for the mobile-only filter toggle button */
+    .filter-toggle-button {
+        display: flex;
+        width: 100%;
+        padding: 10px 20px;
+        font-size: 1rem;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-toggle-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* By default, the filter section is collapsed on mobile */
+    .filter-section {
+        background-color: var(--secondary-bg);
+        border: 1px solid var(--border-color);
+        transition: max-height 0.5s ease-out, padding 0.5s ease-out, opacity 0.3s ease-out, margin-bottom 0.5s ease-out;
+        overflow: hidden;
+        max-height: 0;
+        padding: 0 24px;
+        opacity: 0;
+        margin-bottom: 0;
+    }
+
+    /* The 'open' class expands it */
+    .filter-section.open {
+        max-height: 1000px; /* Large value to allow content to expand */
+        padding: 24px;
+        opacity: 1;
+        margin-bottom: 48px;
+    }
+
+    /* This is the main container for Brand and Price sections.
+       On mobile, it's a single column, stacking the sections vertically. */
+    .filter-section > .grid {
+        display: flex;
+        flex-direction: column; /* Stacks Brand and Price sections */
+        gap: 32px; /* Adds space between them */
+    }
+
+    /* Force the brand filters to display in a 2-column grid on small screens */
+    #brand-filters {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+
+    /* --- Tablet & Desktop Styles (Screens >= 768px) --- */
+
+    @media (min-width: 768px) {
+
+        /* Hide the mobile toggle button on larger screens */
+        .filter-toggle-container {
+            display: none;
+        }
+
+        /* Make the filter section permanently visible for desktop */
+        .filter-section {
+            display: block;
+            max-height: none; /* Remove height constraint */
+            padding: 24px;
+            opacity: 1;
+            overflow: visible; /* Allow dropdowns to show */
+            margin-bottom: 48px;
+        }
+
+        /* On desktop, switch to a 2-column grid for the side-by-side layout */
+        .filter-section > .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 48px;
+            /* No need to set flex-direction anymore */
+        }
+        
+        /* Revert brand filters to a simple wrapping flex layout for desktop */
+        #brand-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Use gap instead of margin for better spacing */
+        }
+
+        /* Adjust individual filter tags for the desktop layout */
+        .filter-tag {
+            width: 140px;
+            height: 50px;
+            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
+        }
+    }
+     @media (min-width: 425px) {
+
+        /* Hide the mobile toggle button on larger screens */
+        .filter-toggle-container {
+            display: none;
+        }
+
+        /* Make the filter section permanently visible for desktop */
+        .filter-section {
+            display: block;
+            max-height: none; /* Remove height constraint */
+            padding: 24px;
+            opacity: 1;
+            overflow: visible; /* Allow dropdowns to show */
+            margin-bottom: 48px;
+        }
+
+        /* On desktop, switch to a 2-column grid for the side-by-side layout */
+        .filter-section > .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 48px;
+            /* No need to set flex-direction anymore */
+        }
+        
+        /* Revert brand filters to a simple wrapping flex layout for desktop */
+        #brand-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Use gap instead of margin for better spacing */
+        }
+
+        /* Adjust individual filter tags for the desktop layout */
+        .filter-tag {
+            width: 140px;
+            height: 50px;
+            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
+        }
+    }
+
+    @media (min-width: 375px) {
+
+        /* Hide the mobile toggle button on larger screens */
+        .filter-toggle-container {
+            display: none;
+        }
+
+        /* Make the filter section permanently visible for desktop */
+        .filter-section {
+            display: block;
+            max-height: none; /* Remove height constraint */
+            padding: 24px;
+            opacity: 1;
+            overflow: visible; /* Allow dropdowns to show */
+            margin-bottom: 48px;
+        }
+
+        /* On desktop, switch to a 2-column grid for the side-by-side layout */
+        .filter-section > .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 48px;
+            /* No need to set flex-direction anymore */
+        }
+        
+        /* Revert brand filters to a simple wrapping flex layout for desktop */
+        #brand-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Use gap instead of margin for better spacing */
+        }
+
+        /* Adjust individual filter tags for the desktop layout */
+        .filter-tag {
+            width: 140px;
+            height: 50px;
+            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
+        }
+    }
+    
+    
   </style>
 </head>
 
@@ -346,7 +527,7 @@
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
       <a href="#" data-action="go-home" class="text-3xl font-bold tracking-wider text-white">KroniQ</a>
       <button id="cart-button" data-action="show-cart" class="relative group">
-        <svg xmlns="http://www.w.org/2000/svg" class="h-7 w-7 text-gray-300 group-hover:text-white transition-colors"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-300 group-hover:text-white transition-colors"
           fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v.01M17 13v.01" />
@@ -388,9 +569,9 @@
               style.</p>
           </div>
           <div class="grid grid-cols-2 gap-4">
-            <img src="https://images.unsplash.com/photo-1594576722539-a71144e3a803?q=80&w=1287&auto-format&fit=crop"
+            <img src="https://images.unsplash.com/photo-1594576722539-a71144e3a803?q=80&w=1287&auto-format&fit-crop"
               alt="Watch detail" class="w-full h-full object-cover rounded-lg shadow-lg" />
-            <img src="https://images.unsplash.com/photo-1542314831-068cd1dbb563?q=80&w=1470&auto=format&fit=crop"
+            <img src="https://images.unsplash.com/photo-1542314831-068cd1dbb563?q=80&w=1470&auto=format&fit-crop"
               alt="Elegant watch on a wrist" class="w-full h-full object-cover rounded-lg shadow-lg mt-8" />
           </div>
         </div>
@@ -401,11 +582,20 @@
       <div class="container mx-auto px-6 py-16">
         <h2 class="text-4xl font-bold text-center mb-12">Our Collection</h2>
 
-        <div class="filter-section">
+        <div class="filter-toggle-container mb-6 md:hidden flex justify-between items-center gap-4">
+          <button data-action="toggle-filters" class="filter-toggle-button cta-button">
+            Filters
+          </button>
+          <button data-action="clear-all-filters" class="text-gray-400 hover:text-white transition px-4">
+            Clear All
+          </button>
+        </div>
+
+        <div id="filter-section" class="filter-section rounded-lg">
           <div class="grid md:grid-cols-2 gap-x-12 gap-y-8 items-start">
             <div>
               <h3 class="font-bold text-lg mb-4">Filter by Brand</h3>
-              <div id="brand-filters" class="flex flex-wrap"></div>
+              <div id="brand-filters" class="flex flex-wrap -m-1"></div>
             </div>
             <div>
               <h3 class="font-bold text-lg mb-4">Filter by Price</h3>
@@ -436,15 +626,15 @@
           </div>
         </div>
 
-        <div id="product-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        <div id="product-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
         <p id="no-products-message" class="text-center text-gray-400 text-xl py-12 hidden">No products match
           your current filters.</p>
       </div>
     </section>
 
     <section id="cart-view" class="view">
-      <div class="container mx-auto px-6 py-16 max-w-3xl">
-        <div class="bg-[var(--secondary-bg)] p-8">
+      <div class="container mx-auto px-6 py-16 max-w-4xl">
+        <div class="bg-[var(--secondary-bg)] p-6 sm:p-8 rounded-lg">
           <h2 class="text-3xl font-bold text-center mb-8">Your Cart</h2>
           <div id="cart-items" class="space-y-6"></div>
           <div id="cart-summary"
@@ -462,7 +652,7 @@
 
     <section id="checkout-view" class="view">
       <div class="container mx-auto px-6 py-16 max-w-xl text-center">
-        <div class="bg-[var(--secondary-bg)] p-8 md:p-12">
+        <div class="bg-[var(--secondary-bg)] p-8 md:p-12 rounded-lg">
           <h2 class="text-3xl font-bold mb-4">Final Step</h2>
           <p class="text-[var(--subtle-text)] mb-8">We handle all orders personally to ensure the best
             service. Please choose your preferred method to contact us and finalize your purchase.</p>
@@ -470,15 +660,15 @@
           <div id="checkout-options" class="space-y-6">
             <h3 class="text-xl font-bold">How would you like to proceed?</h3>
             <div class="grid sm:grid-cols-2 gap-6">
-              <button data-action="contact-facebook" class="outline-button w-full">Contact on
-                Facebook</button>
+              <button data-action="contact-instagram" class="outline-button w-full">Contact on
+                Instagram</button>
               <button data-action="contact-email" class="cta-button w-full">Contact via Email</button>
             </div>
           </div>
 
           <div id="email-form-container" class="hidden mt-8 text-left">
             <p class="text-center text-[var(--subtle-text)] mb-4">Please provide your email. We will send
-              your cart details to our sales team, and you will receive a copy.</p>
+              your cart details to our sales team, who will then contact you to finalize the purchase.</p>
             <form id="email-form">
               <input id="user-email" type="email" placeholder="Enter your email address"
                 class="w-full bg-[var(--primary-bg)] border border-[var(--border-color)] p-3 rounded-sm mb-4 focus:outline-none focus:border-[var(--accent-color)]"
@@ -494,7 +684,8 @@
 
   <div id="modal-overlay" class="fixed inset-0 bg-black/80 z-[999]"></div>
   <div id="product-modal"
-    class="fixed top-1/2 left-1/2 w-11/12 max-w-4xl bg-[var(--secondary-bg)] z-[1000] p-8 shadow-2xl"></div>
+    class="fixed top-1/2 left-1/2 w-11/12 max-w-4xl bg-[var(--secondary-bg)] z-[1000] p-6 sm:p-8 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh]">
+  </div>
 
   <div id="custom-notification"></div>
 
@@ -564,26 +755,31 @@
 
   <script type="module">
     // =============================
+    // CONFIGURATION
+    // =============================
+    const CONFIG = {
+        // IMPORTANT: Replace with your details from EmailJS
+        EMAILJS_SERVICE_ID: 'service_7aprctj',
+        EMAILJS_TEMPLATE_ID: 'template_sv1m03m',
+        EMAILJS_PUBLIC_KEY: 'Q1pT2LKT8GoggRxMZ',
+        // This is the email address that will receive the order inquiries
+        RECIPIENT_EMAIL: 'lejavanikoloz0@gmail.com' 
+    };
+
+    // =============================
     // STATE
     // =============================
     const state = {
       products: [
         
         { id: 2, name: "Rolex Sky-Dweller", price: 69, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_Sky-Dweller_hjy8bc.jpg", description: "უჟანგავი ფოლადის ოქროსფერი სამაჯური და ბზინვარე დეტალები. კვარცის მექანიზმი, თარიღის ჩვენება, დაცვა წვეთებისა და ტენისგან.", tags: ["rolex", "sky-dweller"] },
-
-{ id: 3, name: "Patek Philippe Nautilus", price: 59, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Patek_Philippe_Nautilus_yrqyio.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი მაღალი ხარისხის პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["patek", "nautilus"] },
-
-{ id: 4, name: "Rolex Submariner", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Rolex_Submariner_klkwlw.jpg", description: "უჟანგავი ფოლადის დიზაინი მბრუნავი ბეზელით. კვარცის მექანიზმი, თარიღის ჩვენება და წყალგამძლეობა ყოველდღიური ტენიანობისგან.", tags: ["rolex", "submariner"] },
-
-{ id: 5, name: "Rolex Oyster Perpetual", price: 300, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_Oyster_Perpetual_kzu9rl.jpg", description: "ვერცხლისფერი Jubilee სამაჯური, უნიკალური ცისფერი ციფერბლატი. მექანიკური მექანიზმი, თარიღის ჩვენება Cyclops გადიდებით.", tags: ["rolex", "oyster-perpetual"] },
-
-{ id: 6, name: "Rolex GMT-Master II", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_GMT-Master_II_cjonbr.jpg", description: "Jubilee bracelet სამაჯური, მბრუნავი ბეზელი (24ს). კვარცის მექანიზმი, ფოსფორით ანთებული დეტალები, წყალგამძლე.", tags: ["rolex", "gmt-master"] },
-
-{ id: 7, name: "Cartier Santos", price: 75, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580723/Cartier_Santos_elascz.jpg", description: "უჟანგავი ფოლადის სამაჯური დეკორატიული ჭანჭიკებით. კვადრატული კორპუსი, კვარცის მექანიზმი, თარიღის ჩვენება.", tags: ["cartier", "santos"] },
-
-{ id: 8, name: "Tissot PRX Powermatic 80", price: 69, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Tissot_PRX_Powermatic_80_xt875v.jpg", description: "ელეგანტური და გამძლე უჟანგავი ფოლადის სამაჯური. კვარცის მექანიზმი, დაცვა წვეთებისა და ტენისგან.", tags: ["tissot", "prx"] },
-
-{ id: 9, name: "Audemars Piguet Royal Oak", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Audemars_Piguet_Royal_Oak_ndfbpd.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი, პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["audemars", "royal-oak"] },
+        { id: 3, name: "Patek Philippe Nautilus", price: 59, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Patek_Philippe_Nautilus_yrqyio.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი მაღალი ხარისხის პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["patek philippe", "nautilus"] },
+        { id: 4, name: "Rolex Submariner", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Rolex_Submariner_klkwlw.jpg", description: "უჟანგავი ფოლადის დიზაინი მბრუნავი ბეზელით. კვარცის მექანიზმი, თარიღის ჩვენება და წყალგამძლეობა ყოველდღიური ტენიანობისგან.", tags: ["rolex", "submariner"] },
+        { id: 5, name: "Rolex Oyster Perpetual", price: 300, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_Oyster_Perpetual_kzu9rl.jpg", description: "ვერცხლისფერი Jubilee სამაჯური, უნიკალური ცისფერი ციფერბლატი. მექანიკური მექანიზმი, თარიღის ჩვენება Cyclops გადიდებით.", tags: ["rolex", "oyster-perpetual"] },
+        { id: 6, name: "Rolex GMT-Master II", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Rolex_GMT-Master_II_cjonbr.jpg", description: "Jubilee bracelet სამაჯური, მბრუნავი ბეზელი (24ს). კვარცის მექანიზმი, ფოსფორით ანთებული დეტალები, წყალგამძლე.", tags: ["rolex", "gmt-master"] },
+        { id: 7, name: "Cartier Santos", price: 75, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580723/Cartier_Santos_elascz.jpg", description: "უჟანგავი ფოლადის სამაჯური დეკორატიული ჭანჭიკებით. კვადრატული კორპუსი, კვარცის მექანიზმი, თარიღის ჩვენება.", tags: ["cartier", "santos"] },
+        { id: 8, name: "Tissot PRX Powermatic 80", price: 69, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580291/Tissot_PRX_Powermatic_80_xt875v.jpg", description: "ელეგანტური და გამძლე უჟანგავი ფოლადის სამაჯური. კვარცის მექანიზმი, დაცვა წვეთებისა და ტენისგან.", tags: ["tissot", "prx"] },
+        { id: 9, name: "Audemars Piguet Royal Oak", price: 89, imageUrl: "https://res.cloudinary.com/dlp1pnarv/image/upload/v1756580290/Audemars_Piguet_Royal_Oak_ndfbpd.jpg", description: "უჟანგავი ფოლადის სამაჯური და კორპუსი, პოლირებით. კვარცის მექანიზმი, თარიღის ჩვენება, წყალგამძლე.", tags: ["audemars piguet", "royal-oak"] },
 
       ],
       cart: [],
@@ -613,9 +809,9 @@
       minPriceSlider: document.getElementById('min-price-slider'),
       maxPriceSlider: document.getElementById('max-price-slider'),
       sliderRange: document.getElementById('slider-range'),
-      // === NEW: VIDEO DOM ELEMENTS ===
       bgVideo: document.getElementById('bgVideo'),
       videoFadeOverlay: document.getElementById('video-fade-overlay'),
+      filterSection: document.getElementById('filter-section'),
     };
 
     const priceGap = 100;
@@ -640,7 +836,12 @@
       notificationTimeout = setTimeout(() => DOMElements.notification.classList.remove('show'), 3000);
     };
     
-    // === NEW: VIDEO PLAYER LOGIC ===
+    const capitalize = (str) => {
+        if (!str) return '';
+        return str.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+    };
+
+    // VIDEO PLAYER LOGIC
     const videoElement = DOMElements.bgVideo;
     const videoFadeOverlay = DOMElements.videoFadeOverlay;
     const videoSources = [
@@ -651,12 +852,10 @@
     let currentVideoIndex = 0;
     
     function playNextVideo() {
-        // Use GSAP to fade in the black overlay
         gsap.to(videoFadeOverlay, {
             opacity: 1,
-            duration: 0.7, // Fade out duration
+            duration: 0.7,
             onComplete: () => {
-                // Once the overlay is fully opaque, switch the video source
                 currentVideoIndex = (currentVideoIndex + 1) % videoSources.length;
                 videoElement.src = videoSources[currentVideoIndex];
                 videoElement.load();
@@ -665,22 +864,19 @@
     }
     
     function setupVideoPlayer() {
-        if (videoSources.length > 0) {
-            // Set the initial video source
+        if (videoSources.length > 0 && videoElement) {
             videoElement.src = videoSources[currentVideoIndex];
-            // Add a listener to handle fade-in after the video is loaded
             videoElement.addEventListener('canplay', () => {
+                videoElement.play().catch(error => console.error("Autoplay was prevented:", error));
                 gsap.to(videoFadeOverlay, { opacity: 0, duration: 0.7 });
             });
-            // Add an event listener to trigger the next video transition when the current one ends
             videoElement.addEventListener('ended', playNextVideo);
-            // Start the initial video playback
             videoElement.play().catch(error => console.error("Initial video play failed:", error));
         }
     }
 
 
-    // FILTERING (Unchanged)
+    // FILTERING
     const applyFiltersAndRender = () => {
       let filtered = state.products.filter(p =>
         p.price >= state.filters.minPrice && p.price <= state.filters.maxPrice
@@ -692,6 +888,23 @@
       }
       renderProducts(filtered);
     };
+    
+    const clearAllFilters = () => {
+        state.filters.tags = [];
+        state.filters.minPrice = 0;
+        state.filters.maxPrice = 1000;
+        
+        document.querySelectorAll('.filter-tag.active').forEach(tag => tag.classList.remove('active'));
+        DOMElements.minPriceInput.value = state.filters.minPrice;
+        DOMElements.maxPriceInput.value = state.filters.maxPrice;
+        DOMElements.minPriceSlider.value = state.filters.minPrice;
+        DOMElements.maxPriceSlider.value = state.filters.maxPrice;
+        
+        updateSliderVisuals();
+        applyFiltersAndRender();
+        showCustomNotification("Filters cleared.");
+    };
+
 
     const renderProducts = (productsToRender) => {
       if (productsToRender.length === 0) {
@@ -699,7 +912,7 @@
         DOMElements.noProductsMessage.classList.remove('hidden');
       } else {
         DOMElements.productList.innerHTML = productsToRender.map(p => `
-          <div class="product-card" data-action="show-product-modal" data-id="${p.id}">
+          <div class="product-card rounded-lg overflow-hidden" data-action="show-product-modal" data-id="${p.id}">
             <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-64 object-cover">
             <div class="p-4 text-center">
               <h3 class="font-bold text-lg">${p.name}</h3>
@@ -711,68 +924,64 @@
       }
     };
 
-    // --- Brand + Models dropdown renderer --- (Unchanged)
-   const renderBrandFilters = () => {
-  const brandMap = {};
+    const renderBrandFilters = () => {
+        const brandMap = {};
+        const knownBrands = new Set(["cartier", "tissot", "rolex", "patek philippe", "audemars piguet"]);
 
-  // build brand -> models mapping
-  state.products.forEach(p => {
-    const brand = p.tags.find(t =>
-      ["stauer","aevig","mvmt","fossil","citizen","seiko","tissot","hamilton",
-       "bulova","casio","rolex","omega","tag heuer","patek philippe","audemars piguet"].includes(t)
-    ) || p.tags[0]; // fallback
-    if (!brandMap[brand]) brandMap[brand] = new Set();
+        state.products.forEach(p => {
+            const brand = p.tags.find(t => knownBrands.has(t)) || p.tags[0];
+            if (!brandMap[brand]) brandMap[brand] = new Set();
+            p.tags.forEach(t => {
+                if (t !== brand) brandMap[brand].add(t);
+            });
+        });
 
-    // add other tags as models
-    p.tags.forEach(t => {
-      if (t !== brand) brandMap[brand].add(t);
-    });
-  });
-
-  DOMElements.brandFiltersContainer.innerHTML = Object.keys(brandMap).sort().map(brand => {
-    const models = [...brandMap[brand]];
-    return `
-      <div class="brand-chip relative inline-block m-1">
-        <span class="filter-tag inline-flex items-center gap-1" data-action="toggle-brand-filter" data-tag="${brand}">
-          ${brand}
-          ${models.length ? `<button class="caret ml-1" data-action="toggle-models-dropdown" data-brand="${brand}">▼</button>` : ''}
-        </span>
-        ${models.length ? `
-          <div class="models-dropdown hidden p-2" data-models-dropdown="${brand}">
-            ${models.map(m => `
-              <div class="filter-tag block" data-action="toggle-brand-filter" data-tag="${m}">${m}</div>
-            `).join('')}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }).join('');
-};
-    // CART / MODAL (unchanged)
+        DOMElements.brandFiltersContainer.innerHTML = Object.keys(brandMap).sort().map(brand => {
+            const models = [...brandMap[brand]];
+            const capitalizedBrand = capitalize(brand);
+            return `
+              <div class="brand-chip relative inline-block m-1">
+                <span class="filter-tag inline-flex items-center gap-1" data-action="toggle-brand-filter" data-tag="${brand}">
+                  ${capitalizedBrand}
+                  ${models.length ? `<button class="caret ml-1" data-action="toggle-models-dropdown" data-brand="${brand}">▼</button>` : ''}
+                </span>
+                ${models.length ? `
+                  <div class="models-dropdown hidden p-2" data-models-dropdown="${brand}">
+                    ${models.map(m => `
+                      <div class="filter-tag block" data-action="toggle-brand-filter" data-tag="${m}">${capitalize(m)}</div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+        }).join('');
+    };
+    
+    // CART / MODAL
     const updateCartCount = () => {
       const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
       DOMElements.cartCount.textContent = count;
       gsap.to(DOMElements.cartCount, { scale: count > 0 ? 1 : 0, duration: 0.3, ease: 'back.out(1.7)' });
     };
+
     const renderCart = () => {
       const isCartEmpty = state.cart.length === 0;
       if (isCartEmpty) {
         DOMElements.cartItemsContainer.innerHTML = '<p class="text-center text-[var(--subtle-text)] py-8">Your cart is empty.</p>';
       } else {
         DOMElements.cartItemsContainer.innerHTML = state.cart.map(item => `
-          <div class="flex items-center gap-6">
-            <img src="${item.imageUrl}" alt="${item.name}" class="w-24 h-24 object-cover">
-            <div class="flex-grow">
+          <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 border-b border-[var(--border-color)] pb-6 last:border-b-0">
+            <img src="${item.imageUrl}" alt="${item.name}" class="w-24 h-24 object-cover rounded-md flex-shrink-0">
+            <div class="flex-grow w-full sm:w-auto text-center sm:text-left">
               <h4 class="font-bold text-lg">${item.name}</h4>
               <p class="text-sm text-[var(--subtle-text)]">₾${item.price.toLocaleString()}</p>
-              
             </div>
             <div class="flex items-center gap-3">
-              <button class="px-2 border border-[var(--border-color)]" data-action="decrease-quantity" data-id="${item.id}">-</button>
-              <span class="w-6 text-center text-lg">${item.quantity}</span>
-              <button class="px-2 border border-[var(--border-color)]" data-action="increase-quantity" data-id="${item.id}">+</button>
+              <button class="px-2 py-1 border border-[var(--border-color)] rounded-md" data-action="decrease-quantity" data-id="${item.id}">-</button>
+              <span class="w-8 text-center text-lg font-semibold">${item.quantity}</span>
+              <button class="px-2 py-1 border border-[var(--border-color)] rounded-md" data-action="increase-quantity" data-id="${item.id}">+</button>
             </div>
-            <p class="font-bold w-20 text-right text-lg">₾${(item.price * item.quantity).toLocaleString()}</p>
+            <p class="font-bold w-28 text-center sm:text-right text-lg mt-2 sm:mt-0">₾${(item.price * item.quantity).toLocaleString()}</p>
           </div>
         `).join('');
       }
@@ -780,6 +989,7 @@
       DOMElements.cartTotalText.textContent = `Total: ₾${total.toLocaleString()}`;
       DOMElements.checkoutButton.disabled = isCartEmpty;
     };
+    
     const showProductModal = (productId) => {
       const product = state.products.find(p => p.id === productId);
       if (!product) return;
@@ -787,12 +997,11 @@
         <button data-action="close-modal" class="absolute top-4 right-5 text-gray-400 hover:text-white transition-colors text-4xl leading-none z-10">&times;</button>
         <div class="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-auto object-cover max-h-[70vh]">
+            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-auto object-cover rounded-md max-h-[70vh]">
           </div>
           <div class="flex flex-col h-full py-4">
             <h2 class="text-3xl lg:text-4xl font-bold mb-2">${product.name}</h2>
             <p class="text-3xl lg:text-4xl text-[var(--accent-color)] mb-6">₾${product.price.toLocaleString()}</p>
-
             <p class="text-[var(--subtle-text)] leading-relaxed mb-8">${product.description}</p>
             <div class="mt-auto">
               <button class="cta-button w-full" data-action="add-to-cart" data-id="${product.id}">Add to Cart</button>
@@ -808,7 +1017,7 @@
       DOMElements.modalOverlay.classList.remove('open');
     };
 
-    // EMAIL ACTIONS (unchanged)
+    // ACTIONS
     const addToCart = (productId) => {
       const cartItem = state.cart.find(item => item.id === productId);
       if (cartItem) cartItem.quantity++;
@@ -836,28 +1045,66 @@
       saveCart(); renderCart(); updateCartCount();
       showCustomNotification("Cart has been cleared.");
     };
-    const handleEmailInquiry = () => {
-      if (state.cart.length === 0) { showCustomNotification("Your cart is empty."); return; }
-      const recipient = "nikalezhava5@gmail.com";
-      const subject = "New Watch Inquiry from KroniQ Website";
-      let body = "A customer has submitted an inquiry for the following items:\n\n";
+
+    // --- NEW: handleEmailInquiry function using EmailJS ---
+    const handleEmailInquiry = (e) => {
+      e.preventDefault();
+      const sendButton = e.target.querySelector('button[data-action="send-email"]');
+      const originalButtonText = sendButton.innerHTML;
+
+      // Check if user has replaced placeholder keys
+      if (CONFIG.EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' || CONFIG.EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID') {
+          showCustomNotification("Email service is not configured.");
+          console.error("Please configure your EmailJS credentials in the CONFIG object.");
+          return;
+      }
+      if (state.cart.length === 0) {
+          showCustomNotification("Your cart is empty.");
+          return;
+      }
+      const userEmail = document.getElementById('user-email').value;
+      if (!userEmail) {
+          showCustomNotification("Please enter your email address.");
+          return;
+      }
+
+      sendButton.disabled = true;
+      sendButton.innerHTML = 'Sending...';
+
+      // Prepare email content as a simple text list
+      let cartItemsText = '';
       let total = 0;
       state.cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        body += `- ${item.name} (x${item.quantity}) - ₾${itemTotal.toLocaleString()}\n`;
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+          cartItemsText += `- ${item.name} (x${item.quantity}) - ₾${itemTotal.toLocaleString()}\n`;
       });
-      body += `\n----------------------------------\n`;
-      body += `TOTAL: $${total.toLocaleString()}\n\n`;
-      body += `Customer Email: ${document.getElementById('user-email').value}\n\n`;
-      body += "Please contact the customer to arrange payment and shipping.";
-      const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
-      showCustomNotification("Thank you! Please send the email from your mail client.");
-      clearCart(); showView('home');
+
+      const templateParams = {
+          customer_email: userEmail,
+          cart_summary: cartItemsText,
+          total_price: `₾${total.toLocaleString()}`,
+          to_email: CONFIG.RECIPIENT_EMAIL
+      };
+
+      emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, templateParams, CONFIG.EMAILJS_PUBLIC_KEY)
+          .then((response) => {
+              console.log('SUCCESS!', response.status, response.text);
+              showCustomNotification("Inquiry sent! We will contact you shortly.");
+              sendButton.disabled = false;
+              sendButton.innerHTML = originalButtonText;
+              document.getElementById('user-email').value = ''; 
+              clearCart();
+              showView('home');
+          }, (error) => {
+              console.log('FAILED...', error);
+              showCustomNotification("Failed to send. Please try again later.");
+              sendButton.disabled = false;
+              sendButton.innerHTML = originalButtonText;
+          });
     };
 
-    // PRICE slider visuals (unchanged)
+    // PRICE slider visuals
     const updateSliderVisuals = () => {
       const minVal = parseInt(DOMElements.minPriceSlider.value);
       const maxVal = parseInt(DOMElements.maxPriceSlider.value);
@@ -915,7 +1162,7 @@
       applyFiltersAndRender();
     };
 
-    // ======= ACTION HANDLER (Unchanged) =======
+    // ACTION HANDLER
     const handleAction = (e) => {
       const target = e.target.closest('[data-action]');
       if (!target) return;
@@ -933,15 +1180,19 @@
         case 'decrease-quantity': updateCartItem(productId, 'decrease'); break;
         case 'increase-quantity': updateCartItem(productId, 'increase'); break;
         case 'clear-cart': clearCart(); break;
-        case 'contact-facebook':
-          window.open('https://www.facebook.com/your-page-url', '_blank');
-          showCustomNotification("Redirecting to Facebook...");
+        case 'contact-instagram':
+          window.open('https://www.instagram.com/kron1.q', '_blank');
+          showCustomNotification("Redirecting to Instagram...");
           break;
         case 'contact-email':
           DOMElements.emailFormContainer.classList.remove('hidden');
           break;
-
-        // NEW: filter toggles
+        case 'toggle-filters':
+            DOMElements.filterSection.classList.toggle('open');
+            break;
+        case 'clear-all-filters':
+            clearAllFilters();
+            break;
         case 'toggle-brand-filter': {
           target.classList.toggle('active');
           const set = new Set(state.filters.tags);
@@ -952,28 +1203,27 @@
           break;
         }
         case 'toggle-models-dropdown': {
-          // close other open dropdowns
-          document.querySelectorAll('[data-models-dropdown]').forEach(dd => dd.classList.add('hidden'));
+          e.stopPropagation(); 
           const dropdown = document.querySelector(`[data-models-dropdown="${brand}"]`);
-          if (dropdown) dropdown.classList.toggle('hidden');
+          const isHidden = dropdown.classList.contains('hidden');
+          document.querySelectorAll('[data-models-dropdown]').forEach(dd => dd.classList.add('hidden'));
+          if (isHidden) dropdown.classList.remove('hidden');
           break;
         }
       }
     };
 
-    // close dropdowns when clicking outside
     const closeDropdownsOnOutsideClick = (e) => {
       if (e.target.closest('.brand-chip')) return;
       document.querySelectorAll('[data-models-dropdown]').forEach(dd => dd.classList.add('hidden'));
     };
 
-    // ======= INIT =======
+    // INIT
     document.addEventListener('DOMContentLoaded', () => {
       loadCart();
       renderBrandFilters();
       applyFiltersAndRender();
       updateCartCount();
-      // === NEW: INITIALIZE VIDEO PLAYER ===
       setupVideoPlayer();
       showView('home');
 
@@ -986,7 +1236,8 @@
       document.body.addEventListener('click', handleAction);
       document.addEventListener('click', closeDropdownsOnOutsideClick);
       DOMElements.modalOverlay.addEventListener('click', closeProductModal);
-      DOMElements.emailForm.addEventListener('submit', (e) => { e.preventDefault(); handleEmailInquiry(); });
+      // Pass the event object to the handler
+      DOMElements.emailForm.addEventListener('submit', handleEmailInquiry); 
 
       DOMElements.minPriceSlider.addEventListener('input', handleMinPriceSlider);
       DOMElements.maxPriceSlider.addEventListener('input', handleMaxPriceSlider);
