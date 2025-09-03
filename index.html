@@ -346,54 +346,57 @@
 
     /* Styles for the mobile-only filter toggle button */
     .filter-toggle-button {
-        display: flex;
-        width: 100%;
-        padding: 10px 20px;
-        font-size: 1rem;
-        justify-content: center;
-        margin-top: 10px;
-        margin-bottom: 20px;
+      display: flex;
+      width: 100%;
+      padding: 10px 20px;
+      font-size: 1rem;
+      justify-content: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
     }
 
     .filter-toggle-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* By default, the filter section is collapsed on mobile */
     .filter-section {
-        background-color: var(--secondary-bg);
-        border: 1px solid var(--border-color);
-        transition: max-height 0.5s ease-out, padding 0.5s ease-out, opacity 0.3s ease-out, margin-bottom 0.5s ease-out;
-        overflow: hidden;
-        max-height: 0;
-        padding: 0 24px;
-        opacity: 0;
-        margin-bottom: 0;
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      transition: max-height 0.5s ease-out, padding 0.5s ease-out, opacity 0.3s ease-out, margin-bottom 0.5s ease-out;
+      overflow: hidden;
+      max-height: 0;
+      padding: 0 24px;
+      opacity: 0;
+      margin-bottom: 0;
     }
 
     /* The 'open' class expands it */
     .filter-section.open {
-        max-height: 1000px; /* Large value to allow content to expand */
-        padding: 24px;
-        opacity: 1;
-        margin-bottom: 48px;
+      max-height: 1000px;
+      /* Large value to allow content to expand */
+      padding: 24px;
+      opacity: 1;
+      margin-bottom: 48px;
     }
 
     /* This is the main container for Brand and Price sections.
        On mobile, it's a single column, stacking the sections vertically. */
-    .filter-section > .grid {
-        display: flex;
-        flex-direction: column; /* Stacks Brand and Price sections */
-        gap: 32px; /* Adds space between them */
+    .filter-section>.grid {
+      display: flex;
+      flex-direction: column;
+      /* Stacks Brand and Price sections */
+      gap: 32px;
+      /* Adds space between them */
     }
 
     /* Force the brand filters to display in a 2-column grid on small screens */
     #brand-filters {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
 
 
@@ -401,124 +404,47 @@
 
     @media (min-width: 768px) {
 
-        /* Hide the mobile toggle button on larger screens */
-        .filter-toggle-container {
-            display: none;
-        }
+      /* Hide the mobile toggle button on larger screens */
+      .filter-toggle-container {
+        display: none;
+      }
 
-        /* Make the filter section permanently visible for desktop */
-        .filter-section {
-            display: block;
-            max-height: none; /* Remove height constraint */
-            padding: 24px;
-            opacity: 1;
-            overflow: visible; /* Allow dropdowns to show */
-            margin-bottom: 48px;
-        }
+      /* Make the filter section permanently visible for desktop */
+      .filter-section {
+        display: block;
+        max-height: none;
+        /* Remove height constraint */
+        padding: 24px;
+        opacity: 1;
+        overflow: visible;
+        /* Allow dropdowns to show */
+        margin-bottom: 48px;
+      }
 
-        /* On desktop, switch to a 2-column grid for the side-by-side layout */
-        .filter-section > .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            column-gap: 48px;
-            /* No need to set flex-direction anymore */
-        }
-        
-        /* Revert brand filters to a simple wrapping flex layout for desktop */
-        #brand-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px; /* Use gap instead of margin for better spacing */
-        }
+      /* On desktop, switch to a 2-column grid for the side-by-side layout */
+      .filter-section>.grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 48px;
+        /* No need to set flex-direction anymore */
+      }
 
-        /* Adjust individual filter tags for the desktop layout */
-        .filter-tag {
-            width: 140px;
-            height: 50px;
-            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
-        }
+      /* Revert brand filters to a simple wrapping flex layout for desktop */
+      #brand-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        /* Use gap instead of margin for better spacing */
+      }
+
+      /* Adjust individual filter tags for the desktop layout */
+      .filter-tag {
+        width: 140px;
+        height: 50px;
+        margin: 0;
+        /* Let the flexbox 'gap' property handle all spacing */
+      }
     }
-     @media (min-width: 425px) {
-
-        /* Hide the mobile toggle button on larger screens */
-        .filter-toggle-container {
-            display: none;
-        }
-
-        /* Make the filter section permanently visible for desktop */
-        .filter-section {
-            display: block;
-            max-height: none; /* Remove height constraint */
-            padding: 24px;
-            opacity: 1;
-            overflow: visible; /* Allow dropdowns to show */
-            margin-bottom: 48px;
-        }
-
-        /* On desktop, switch to a 2-column grid for the side-by-side layout */
-        .filter-section > .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            column-gap: 48px;
-            /* No need to set flex-direction anymore */
-        }
-        
-        /* Revert brand filters to a simple wrapping flex layout for desktop */
-        #brand-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px; /* Use gap instead of margin for better spacing */
-        }
-
-        /* Adjust individual filter tags for the desktop layout */
-        .filter-tag {
-            width: 140px;
-            height: 50px;
-            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
-        }
-    }
-
-    @media (min-width: 375px) {
-
-        /* Hide the mobile toggle button on larger screens */
-        .filter-toggle-container {
-            display: none;
-        }
-
-        /* Make the filter section permanently visible for desktop */
-        .filter-section {
-            display: block;
-            max-height: none; /* Remove height constraint */
-            padding: 24px;
-            opacity: 1;
-            overflow: visible; /* Allow dropdowns to show */
-            margin-bottom: 48px;
-        }
-
-        /* On desktop, switch to a 2-column grid for the side-by-side layout */
-        .filter-section > .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            column-gap: 48px;
-            /* No need to set flex-direction anymore */
-        }
-        
-        /* Revert brand filters to a simple wrapping flex layout for desktop */
-        #brand-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px; /* Use gap instead of margin for better spacing */
-        }
-
-        /* Adjust individual filter tags for the desktop layout */
-        .filter-tag {
-            width: 140px;
-            height: 50px;
-            margin: 0; /* Let the flexbox 'gap' property handle all spacing */
-        }
-    }
-    
-    
   </style>
 </head>
 
@@ -759,9 +685,9 @@
     // =============================
     const CONFIG = {
         // IMPORTANT: Replace with your details from EmailJS
-        EMAILJS_SERVICE_ID: 'service_7aprctj',
-        EMAILJS_TEMPLATE_ID: 'template_sv1m03m',
-        EMAILJS_PUBLIC_KEY: 'Q1pT2LKT8GoggRxMZ',
+        EMAILJS_SERVICE_ID: 'service_o70burp',
+        EMAILJS_TEMPLATE_ID: 'template_ake4u1q',
+        EMAILJS_PUBLIC_KEY: '3gPVJqH6TcwfobYJ7',
         // This is the email address that will receive the order inquiries
         RECIPIENT_EMAIL: 'lejavanikoloz0@gmail.com' 
     };
@@ -1047,62 +973,82 @@
     };
 
     // --- NEW: handleEmailInquiry function using EmailJS ---
-    const handleEmailInquiry = (e) => {
-      e.preventDefault();
-      const sendButton = e.target.querySelector('button[data-action="send-email"]');
-      const originalButtonText = sendButton.innerHTML;
+     const handleEmailInquiry = (e) => {
+    e.preventDefault();
+    const sendButton = e.target.querySelector('button[data-action="send-email"]');
+    const originalButtonText = sendButton.innerHTML;
 
-      // Check if user has replaced placeholder keys
-      if (CONFIG.EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' || CONFIG.EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID') {
-          showCustomNotification("Email service is not configured.");
-          console.error("Please configure your EmailJS credentials in the CONFIG object.");
-          return;
-      }
-      if (state.cart.length === 0) {
-          showCustomNotification("Your cart is empty.");
-          return;
-      }
-      const userEmail = document.getElementById('user-email').value;
-      if (!userEmail) {
-          showCustomNotification("Please enter your email address.");
-          return;
-      }
+    if (state.cart.length === 0) {
+        showCustomNotification("Your cart is empty.");
+        return;
+    }
+    const userEmail = document.getElementById('user-email').value;
+    if (!userEmail) {
+        showCustomNotification("Please enter your email address.");
+        return;
+    }
 
-      sendButton.disabled = true;
-      sendButton.innerHTML = 'Sending...';
+    sendButton.disabled = true;
+    sendButton.innerHTML = 'Sending...';
 
-      // Prepare email content as a simple text list
-      let cartItemsText = '';
-      let total = 0;
-      state.cart.forEach(item => {
-          const itemTotal = item.price * item.quantity;
-          total += itemTotal;
-          cartItemsText += `- ${item.name} (x${item.quantity}) - ₾${itemTotal.toLocaleString()}\n`;
-      });
+    let total = 0;
+    const cartItemsHtml = `
+      <table style="width: 100%; border-collapse: collapse;">
+          <tbody>
+              ${state.cart.map(item => {
+                  const itemTotal = item.price * item.quantity;
+                  total += itemTotal;
+                  return `
+                      <tr style="border-bottom: 1px solid #eee;">
+                          <td style="padding: 10px 5px;"><img src="${item.imageUrl}" alt="${item.name}" width="60" style="border-radius: 4px;"></td>
+                          <td style="padding: 10px 5px;">
+                              <div style="font-weight: bold;">${item.name}</div>
+                              <div style="font-size: 12px; color: #777;">Quantity: ${item.quantity}</div>
+                          </td>
+                          <td style="padding: 10px 5px; text-align: right; font-weight: bold; width: 100px;">₾${itemTotal.toLocaleString()}</td>
+                      </tr>
+                  `;
+              }).join('')}
+          </tbody>
+      </table>
+    `;
 
-      const templateParams = {
-          customer_email: userEmail,
-          cart_summary: cartItemsText,
-          total_price: `₾${total.toLocaleString()}`,
-          to_email: CONFIG.RECIPIENT_EMAIL
-      };
-
-      emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, templateParams, CONFIG.EMAILJS_PUBLIC_KEY)
-          .then((response) => {
-              console.log('SUCCESS!', response.status, response.text);
-              showCustomNotification("Inquiry sent! We will contact you shortly.");
-              sendButton.disabled = false;
-              sendButton.innerHTML = originalButtonText;
-              document.getElementById('user-email').value = ''; 
-              clearCart();
-              showView('home');
-          }, (error) => {
-              console.log('FAILED...', error);
-              showCustomNotification("Failed to send. Please try again later.");
-              sendButton.disabled = false;
-              sendButton.innerHTML = originalButtonText;
-          });
+    // Email to Owner
+    const paramsToOwner = {
+        customer_email: userEmail,
+        cart_items_html: cartItemsHtml,
+        total_price: `₾${total.toLocaleString()}`,
+        to_email: "lejavanikoloz0@gmail.com" // fixed recipient
     };
+
+    // Email to User
+    const paramsToUser = {
+        customer_email: userEmail,
+        cart_items_html: cartItemsHtml,
+        total_price: `₾${total.toLocaleString()}`,
+        to_email: userEmail // user’s own email
+    };
+
+    Promise.all([
+        emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_ake4u1q", paramsToOwner, CONFIG.EMAILJS_PUBLIC_KEY),
+        emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_i73e5xg", paramsToUser, CONFIG.EMAILJS_PUBLIC_KEY)
+    ])
+    .then(() => {
+        console.log('Both emails sent successfully');
+        showCustomNotification("Inquiry sent! We will contact you shortly.");
+        clearCart();
+        showView('home');
+    })
+    .catch((error) => {
+        console.error('Email send failed', error);
+        showCustomNotification("Failed to send. Please try again later.");
+    })
+    .finally(() => {
+        sendButton.disabled = false;
+        sendButton.innerHTML = originalButtonText;
+        document.getElementById('user-email').value = '';
+    });
+};
 
     // PRICE slider visuals
     const updateSliderVisuals = () => {
