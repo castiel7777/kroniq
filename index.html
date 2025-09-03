@@ -684,13 +684,11 @@
     // CONFIGURATION
     // =============================
     const CONFIG = {
-        // IMPORTANT: Replace with your details from EmailJS
-        EMAILJS_SERVICE_ID: 'service_o70burp',
-        EMAILJS_TEMPLATE_ID: 'template_ake4u1q',
-        EMAILJS_PUBLIC_KEY: '3gPVJqH6TcwfobYJ7',
-        // This is the email address that will receive the order inquiries
-        RECIPIENT_EMAIL: 'lejavanikoloz0@gmail.com' 
-    };
+    EMAILJS_SERVICE_ID: 'service_9nifyv2',
+    EMAILJS_PUBLIC_KEY: 'oT4u7-clKQO3t7mJ7',
+    EMAILJS_TEMPLATE_ID: 'template_ake4u1q', // owner template
+    RECIPIENT_EMAIL: 'lejavanikoloz0@gmail.com'
+};
 
     // =============================
     // STATE
@@ -1030,9 +1028,9 @@
     };
 
     Promise.all([
-        emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_ake4u1q", paramsToOwner, CONFIG.EMAILJS_PUBLIC_KEY),
-        emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_i73e5xg", paramsToUser, CONFIG.EMAILJS_PUBLIC_KEY)
-    ])
+    emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_ake4u1q", paramsToOwner, CONFIG.EMAILJS_PUBLIC_KEY),
+    emailjs.send(CONFIG.EMAILJS_SERVICE_ID, "template_i73e5xg", paramsToUser, CONFIG.EMAILJS_PUBLIC_KEY)
+])
     .then(() => {
         console.log('Both emails sent successfully');
         showCustomNotification("Inquiry sent! We will contact you shortly.");
